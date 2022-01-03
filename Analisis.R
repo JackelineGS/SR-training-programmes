@@ -51,13 +51,33 @@ openxlsx::write.xlsx(RegionB, file = "Regiones.xlsx")
 ###############################################################
 ####################### COSTOS ################################
 # Medicina
+
+#Distribución geográfica de los programas
+BASE %>%
+  select(Carrer, Region) %>% 
+  filter(Carrer == "Medicine") %>% 
+  count(Region) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Cantidad de universidades privadas
+BASE %>%
+  filter(Carrer == "Medicine") %>% 
+  select(Carrer, Management) %>% 
+  count(Carrer, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+  
+#Costo Universidad Nacional 
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 1) %>% 
   filter(Carrer == "Medicine") %>% 
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
-  
+
+#Costo Universidad Particular
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -65,6 +85,7 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
 
+#Descriptivos de los costos
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -72,6 +93,7 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>%
   describe()
 
+#Descriptivos de los costos quitando los casos con "0"
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -81,6 +103,24 @@ BASE %>%
   describe()
 
 #Psychology
+
+#Distribución geográfica de los programas
+BASE %>%
+  select(Carrer, Region) %>% 
+  filter(Carrer == "Psychology") %>% 
+  count(Region) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Cantidad de universidades privadas
+BASE %>%
+  filter(Carrer == "Psychology") %>% 
+  select(Carrer, Management) %>% 
+  count(Carrer, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+# Costo en universidades nacionales
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 1) %>% 
@@ -88,7 +128,15 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
 
+# Rango del costo mínimo y máximo en universidad privada
+BASE %>%
+  filter(Grade == "Pregrado") %>%
+  filter(Management == 0) %>% 
+  filter(Carrer == "Psychology") %>% 
+  select(Costo_Tmin:Costo_Tmax) %>% 
+  print(n = Inf)
 
+#Descriptivos de los costos (tomar el minimo)
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -96,6 +144,7 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>% 
   describe()
 
+#Descriptivos de los costos quitando los casos con "0"
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -106,6 +155,24 @@ BASE %>%
 
 #Enfermeria
 
+#Distribución geográfica de los programas
+BASE %>%
+  select(Carrer, Region) %>% 
+  filter(Carrer == "Nursing") %>% 
+  count(Region) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
+
+#Cantidad de universidades publicas y privadas
+BASE %>%
+  filter(Carrer == "Nursing") %>% 
+  select(Carrer, Management) %>% 
+  count(Carrer, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Costo de las universidades publicas
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 1) %>% 
@@ -113,7 +180,15 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
 
+#Costo de las universidades privadas
+BASE %>%
+  filter(Grade == "Pregrado") %>%
+  filter(Management == 0) %>% 
+  filter(Carrer == "Nursing") %>% 
+  select(Costo_Tmin:Costo_Tmax) %>% 
+  print(n = Inf)
 
+# Descriptivos de los costos
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -121,6 +196,7 @@ BASE %>%
   select(Costo_Tmin:Costo_Tmax) %>% 
   describe()
 
+#Descriptivos de los costos quitando "0" 
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -131,20 +207,39 @@ BASE %>%
 
 #Tecnica
 
+#Distribución geográfica de los programas
+BASE %>%
+  select(Carrer, Region) %>% 
+  filter(Carrer == "Nursing-Technician") %>% 
+  count(Region) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
+
+#Cantidad de instituciones publicas y privadas
+BASE %>%
+  filter(Carrer == "Nursing-Technician") %>% 
+  select(Carrer, Management) %>% 
+  count(Carrer, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Costo de las universidades publicas
 BASE %>%
   filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
+  filter(Management == 1) %>% 
   filter(Carrer == "Nursing-Technician") %>% 
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
 
+#Costo de las universidades privadas
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
   filter(Carrer == "Nursing-Technician") %>% 
-  select(Costo_Tmin:Costo_Tmax) %>% 
-  describe()
-
+  select(Institution, Costo_Tmin:Costo_Tmax) %>% 
+  print(n = Inf)
+#Descriptivo de los costos de instiutos privados
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
@@ -155,27 +250,38 @@ BASE %>%
 
 #Social
 
+#Distribución geográfica de los programas
+BASE %>%
+  select(Carrer, Region) %>% 
+  filter(Carrer == "Social-work") %>% 
+  count(Region) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
+
+#Cantidad de instituciones publicas y privadas
+BASE %>%
+  filter(Carrer == "Social-work") %>% 
+  select(Carrer, Management) %>% 
+  count(Carrer, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Costo de las universidades publicas
+BASE %>%
+  filter(Grade == "Pregrado") %>%
+  filter(Management == 1) %>% 
+  filter(Carrer == "Social-work") %>% 
+  select(Costo_Tmin:Costo_Tmax) %>% 
+  print(n = Inf)
+
+# Costo en las universidades privadas
 BASE %>%
   filter(Grade == "Pregrado") %>%
   filter(Management == 0) %>% 
   filter(Carrer == "Social-work") %>% 
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
-
-BASE %>%
-  filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
-  filter(Carrer == "Social-work") %>% 
-  select(Costo_Tmin:Costo_Tmax) %>% 
-  describe()
-
-BASE %>%
-  filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
-  filter(Carrer == "Nursing-Technician") %>% 
-  select(Costo_Tmin:Costo_Tmax) %>%
-  filter(Costo_Tmin != 0) %>% 
-  describe()
 
 # Tecnologia
 # Speech-therapy
@@ -183,110 +289,61 @@ BASE %>%
 
 BASE %>%
   filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
   filter(Carrer == "Occupational-therapy") %>% 
+  select(Costo_Tmin:Costo_Tmax)
+
+#Terapia de lenguaje(1 Cayetano / 1 Villarreal)
+BASE %>%
+  filter(Grade == "Pregrado") %>%
+  filter(Carrer == "Speech-therapy") %>% 
   select(Costo_Tmin:Costo_Tmax) %>% 
   print(n = Inf)
 
-BASE %>%
-  filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
-  filter(Carrer == "Occupational-therapy") %>% 
-  select(Costo_Tmin:Costo_Tmax) %>% 
-  describe()
-
-BASE %>%
-  filter(Grade == "Pregrado") %>%
-  filter(Management == 0) %>% 
-  filter(Carrer == "Nursing-Technician") %>% 
-  select(Costo_Tmin:Costo_Tmax) %>%
-  filter(Costo_Tmin != 0) %>% 
-  describe()
-
-
-
-library(openxlsx)
-openxlsx::write.xlsx(Distribucion, file = "Distribution.xlsx")
-
-############ Gestion de universidad #####################
-#########################################################
-
-BASE_1 <- filter(BASE, Type != "instituto")
-BASE_1 <- BASE_1 %>% 
-  count(Type)
-BASE_1 <- BASE_1 %>% 
-  count(Management)
-BASE_1 <- BASE_1 %>% 
-  count(Management) %>% 
-  mutate(
-    Porcentaje = n/sum(n))
-
-BASE_1 <- filter(BASE, Grade != "Especialidad")
-
-UNIS <- BASE_1 %>% 
-  count(Institution)
 
 Tipo <- BASE_1 %>% 
   count(Institution, Management) %>% 
   mutate(
     Porcentaje = n/sum(n))
 
+########################################################
+########## Totales de programas de SE ##################
 
-library(openxlsx)
-openxlsx::write.xlsx(UNIS, file = "UNIS.xlsx")
-
-##########################################################
-###### Hallando la cantidad de Institutos
-##########################################################
-
-BASE_2 <- filter(BASE, Grado != "universidad")
-
-Instituciones <- BASE_2 %>% 
-  count(Institucion) %>% 
+# Cantidad de programas
+BASE %>% 
+  filter(Grade == "Especialidad") %>%
+  select(Grade, Public) %>% 
+  count(Grade, Public) %>%
   mutate(
-    Porcentaje = n/sum(n))
+    Porcentaje = round (n/sum(n),2)) %>% 
+  print(n = Inf)
 
 ########################################################
-######## Cantidad total de programas ####################
+########## Conteos de programas de SE ##################
 
-BASE_3 <- filter(BASE, Grade != "Especialidad")
 
-CARRERA <- BASE_3 %>% 
-  count(Carrer) %>% 
+#Distribución geográfica de los programas
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Medicos") %>%
+  count(Region, Public) %>% 
   mutate(
-    Porcentaje = n/sum(n))
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
 
-library(openxlsx)
-openxlsx::write.xlsx(CARRERA, file = "Carrera.xlsx")
+#Cantidad de universidades publicas y privadas
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Medicos") %>%
+  count(Public, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
 
-BASE_1 <- BASE %>% 
-  filter(Management == "0") %>% 
-  filter(Grade == "Pregrado") %>% 
-  filter(Type == "universidad") %>% 
-  select (Institution, Carrer, Type,Management,
-          Grade, Costo_Tmin:Costo_Tmax)
-
-Costo <- BASE_1 %>%
-  filter(Carrer == "Social-work") %>% 
-  skim()
-
-BASE_2 <- BASE %>% 
-  filter(Management == "0") %>% 
-  filter(Grade == "Pregrado") %>% 
-  filter(Type == "instituto") %>% 
-  select (Institution, Carrer, Type,Management,
-          Grade, Costo_Tmin:Costo_Tmax)
-
-Costo_I <- BASE_2 %>%
-  select(Institution, Costo_Tmin:Costo_Tmax) %>% 
-  count(Institution, Costo_Tmax)
-
-Privada <- BASE_2 %>% 
-  skim()
-
-library(openxlsx)
-openxlsx::write.xlsx(Costo, file = "Costo.xlsx")
-
+#Costo
+BASE %>%
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Medicos") %>%
+  select(Costo_Tmin:Costo_Tmax) %>% 
+  print(n = Inf)
 
 ##############################################
 ############ Programs by region ##############
