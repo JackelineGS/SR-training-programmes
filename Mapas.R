@@ -1,5 +1,5 @@
 ##############################################
-############## ANALISIS DEMOGRAFICO ##########
+############# CREACIÓN DE MAPAS ##############
 ##############################################
 
 install.packages("sp")
@@ -16,65 +16,55 @@ p_load(ggplot2,tidyverse,psych,purrr,sf, sp, ggrepel)
 
 #1. Cargar paquetes
 #2. Cargar archivo .shp
-#3. Cargar data de universidades
+#3. Cargar data
 #4. Crear centroides en el archivo .shp
 #5. Unir bases de datos
-#4. Convertir en categoricos y crear m
+#4. Crear mapas
 
 
-###### theme para eliminar coordenadas ##############
+########### CARGAR BASES Y CREAR CENTROIDES ####################
 
-theme_custom_map <- function(base_size = 11,
-                             base_family = "",
-                             base_line_size = base_size / 22,
-                             base_rect_size = base_size / 22) {
-  theme_bw(base_size = base_size, 
-           base_family = base_family,
-           base_line_size = base_line_size) %+replace%
-    theme(
-      axis.title = element_blank(), 
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      complete = TRUE
-    )
-}
+# Se carga el archivo sf
+# st_read es una función del paquete sf
+mapa_sh <- st_read("BAS_LIM_DEPARTAMENTO.shp") 
 
-
-########### CARGAR BASES Y CREAR CENTROIDE####################
-
-mapa <- st_read("BAS_LIM_DEPARTAMENTO.shp") #st_read es una función del paquete sf
-
-mapa <- mapa %>% mutate(centroid = map(geometry, st_centroid), 
+# Creación del centroide en el archivo .shp
+mapa_sh <- mapa %>% 
+  mutate(centroid = map(geometry, st_centroid), 
                         coords = map(centroid, st_coordinates), 
                         coords_x = map_dbl(coords,1), 
                         coords_y = map_dbl(coords, 2))
+# Se carga la data
+mapa_df <- readxl::read_xlsx("Data_map_score_10.xlsx")
 
-datos_uni <- readxl::read_xlsx("Data_map_score_10.xlsx")
-datos_F <- mapa %>% 
-  left_join(datos_uni)
+# Se junta el archivo .shp y la data
+# La primera columna de ambas bases debe tener el mismo nombre
+datos_F <- mapa_sh %>% 
+  left_join(mapa_df)
 
-##La llave es el nombre de la primera columna ("NOMBDEP")
-#st_centroid es función del paquete sf
+# Primer mapa con etiquetas
+ggplot(data = datos_F) + 
+  geom_sf(fill = "skyblue", 
+         color = "black") +
+  geom_text_repel(mapping = aes(coords_x, coords_y, 
+                    label = NOMBDEP), 
+                     size = 2.25)
 
-ggplot(data = mapa) + 
-  geom_sf(fill="skyblue", color="black") +
-  geom_text_repel(mapping = 
-                    aes(coords_x, coords_y, label = NOMBDEP), size = 2.25)
-
-
-################## CANTIDAD CON NOMBRES ##############
-
-ggplot(datos_F) + #geom_sf es función del paquete ggplot2
-  geom_sf(aes(fill = TOTAL))+
-  labs(title = "Cantidad de programas",
-       caption = "Fuente: Elaboración propia",
-       x="Longitud",
-       y="Latitud")+
-  scale_fill_continuous(guide_legend(title = "Cantidad"))+
+# Mapa con etiqueta de las cantidades
+ggplot(datos_F) +
+  geom_sf(aes(fill = TOTAL)) +
+        labs(title = "Cantidad de programas",
+           caption = "Fuente: Elaboración propia",
+                 x = "Longitud",
+                 y = "Latitud") +
+  scale_fill_continuous(guide_legend(title = "Cantidad")) +
   geom_text_repel(mapping = aes(coords_x, coords_y, label = TOTAL), size = 2.25)
 
-###############################################
-################### TOTALES ###################
+###################################################################### 
+############## Mapas con cantidades categorizadas ####################
+######################################################################
+
+# Mapa del total de programas
 
 datos_F <- arrange(datos_F, TOTAL)
 datos_F$TOTAL <- factor(datos_F$TOTAL, 
@@ -116,30 +106,31 @@ F_mapa <- datos_F %>%
   theme(
     legend.position = "left",
     legend.margin = margin(3,3,3,3)
-  )+ 
+  ) + 
   theme(
     legend.text = element_text(size = 10, colour = "black")
-  )+ 
-  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
-  geom_label_repel(mapping = aes(coords_x, coords_y, label = TOTAL_L), 
-                   fontface = "bold", color = "gray15",
-                   box.padding = unit(0.30, "lines"),
-                   point.padding = unit(0.2, "lines"),
-                   segment.color = "gray50",
-                   show.legend = FALSE)+
-  theme_classic(base_size = 12) + 
-  theme(panel.grid = element_line(colour = "transparent"),
-        panel.background = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
+  ) + 
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
+  geom_label_repel(mapping = aes(coords_x, coords_y, 
+                     label = TOTAL_L), 
+                  fontface = "bold", 
+                     color = "gray15",
+               box.padding = unit(0.30, "lines"),
+             point.padding = unit(0.2, "lines"),
+             segment.color = "gray50",
+               show.legend = FALSE) +
+   theme_classic(base_size = 12) + 
+   theme(panel.grid = element_line(colour = "transparent"),
+   panel.background = element_blank(),
+          axis.text = element_blank(),
+         axis.ticks = element_blank(),
         axis.line.x = element_blank(),
         axis.line.y = element_blank(),
-        axis.title.y = element_blank(),
-        axis.title.x = element_blank())
+       axis.title.y = element_blank(),
+       axis.title.x = element_blank())
 
 
-##############################################
-## Categorizar PRE_ENF_F
+# Mapa de enfermería (PRE_ENF_F)
 datos_F <- arrange(datos_F, PRE_ENF_F)
 datos_F$PRE_ENF_F <- factor(datos_F$PRE_ENF_F, 
                                levels = c(0, 1, 2, 3, 4, 5, 20),

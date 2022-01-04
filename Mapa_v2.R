@@ -3,9 +3,6 @@ install.packages("hablar")
 install.packages("ggbump")
 install.packages("rnaturalearth")
 install.packages("feather")
-install.packages()
-
-
 
 pacman::p_load(BBmisc, tidyverse, hablar, ggbump, sf, 
                rnaturalearth, feather, janitor, lubridate)
