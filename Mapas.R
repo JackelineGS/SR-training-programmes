@@ -64,7 +64,7 @@ ggplot(datos_F) +
 ############## Mapas con cantidades categorizadas ####################
 ######################################################################
 
-# Mapa del total de programas
+# MAPA DEL TOTAL DE PROGRAMAS
 
 datos_F <- arrange(datos_F, TOTAL)
 datos_F$TOTAL <- factor(datos_F$TOTAL, 
@@ -154,22 +154,20 @@ F_mapa <- datos_F %>%
                                "4 programs" = "#43CD80",
                                "5 programs" = "#7AC5CD",
                                "20 programs" = "#4876FF")) +
-  theme_bw()+
+  theme_bw() +
   theme(
     legend.position = "left",
-    legend.margin = margin(3,3,3,3)
-  )+ 
+      legend.margin = margin(3,3,3,3)) + 
   theme(
-    legend.text = element_text(size = 10, colour = "black")
-  )+ 
+    legend.text = element_text(size = 10, colour = "black")) + 
   geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
   geom_label_repel(mapping = aes(coords_x, coords_y, label = PRE_ENF_L), 
-                   fontface = "bold", color = "gray15",
-                   box.padding = unit(0.30, "lines"),
-                   point.padding = unit(0.2, "lines"),
-                   segment.color = "gray50",
-                   show.legend = FALSE)+
-  theme_classic(base_size = 12) + 
+                  fontface = "bold", color = "gray15",
+               box.padding = unit(0.30, "lines"),
+             point.padding = unit(0.2, "lines"),
+             segment.color = "gray50",
+               show.legend = FALSE)+
+   theme_classic(base_size = 12) + 
   theme(panel.grid = element_line(colour = "transparent"),
         panel.background = element_blank(),
         axis.text = element_blank(),
@@ -180,10 +178,7 @@ F_mapa <- datos_F %>%
         axis.title.x = element_blank())
 
 
-########################################################
-## Convertir en factor a PRE_MED_F
-
-## Categorizar PRE_MED_F
+# Mapa de los programas de medicina (PRE_MED_F)
 
 datos_F <- arrange(datos_F, PRE_MED_F)
 
@@ -231,8 +226,7 @@ M_mapa <- datos_F %>%
         axis.title.x = element_blank())
 
 
-########################################################
-## Convertir en factor a PRE_PSICO_F
+# Programas de psicología (PRE_PSICO_F)
 
 datos_F <- arrange(datos_F, PRE_PSICO_F)
 datos_F$PRE_PSICO_F <- factor(datos_F$PRE_PSICO_F, 
@@ -257,21 +251,21 @@ P_mapa <- datos_F %>%
                                "4 programs" = "#43CD80",
                                "5 programs" = "#7AC5CD",
                                "40 programs" = "#4876FF")) +
-  theme_bw()+
+  theme_bw() +
   theme(
     legend.position = "rigth",
     legend.margin = margin(3,3,3,3)
-  )+ 
+  ) + 
   theme(
     legend.text = element_text(size = 11, colour = "black")
-  )+ 
-  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
+  ) + 
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
   geom_label_repel(mapping = aes(coords_x, coords_y, label = PRE_PSICO_L), 
                    fontface = "bold", color = "gray15",
                    box.padding = unit(0.30, "lines"),
                    point.padding = unit(0.2, "lines"),
                    segment.color = "gray50",
-                   show.legend = FALSE)+
+                   show.legend = FALSE) +
   theme_classic(base_size = 12) + 
   theme(panel.grid = element_line(colour = "transparent"),
         panel.background = element_blank(),
@@ -282,8 +276,7 @@ P_mapa <- datos_F %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
-#############################################################
-## Convertir en factor a PRE_TRAB_PRE
+# Mapa de trabajo social (PRE_TRAB_PRE)
 
 datos_F <- arrange(datos_F, PRE_TRAB_PRE)
 datos_F$PRE_TRAB_PRE <- factor(datos_F$PRE_TRAB_PRE, 
@@ -302,15 +295,15 @@ T_mapa <- datos_F %>%
                                "1 program" = "#FAE073",
                                "2 programs" = "#B7F1B2",
                                "3 programs" = "#6FC59E")) +
-  theme_bw()+
+  theme_bw() +
   theme(
     legend.position = "left",
     legend.margin = margin(3,3,3,3)
-  )+ 
+  ) + 
   theme(
     legend.text = element_text(size = 15, colour = "black")
-  )+ 
-  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
+  ) + 
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
   geom_label_repel(mapping = aes(coords_x, coords_y, label = PRE_TRAB_L), 
                    fontface = "bold", color = "gray15",
                    box.padding = unit(0.30, "lines"),
@@ -327,39 +320,7 @@ T_mapa <- datos_F %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
-############################################################
-
-## Juntar gráficos
-
-install.packages("gridExtra")
-require(gridExtra)
-
-F2 <- grid.arrange(M_mapa,F_mapa,
-                  P_mapa,T_mapa, 
-                  nrow= 2)
-F1
-
-###########################################################
-require(ggpubr)
-TODOS <- ggpubr::ggarrange(M_mapa,
-                           F_mapa,
-                           P_mapa,
-                           T_mapa)
-
-install.packages("ggstatsplot")
-
-###########################################################
-## sale error
-require(ggstatsplot)
-combine_plots(
-  M_mapa,F_mapa,P_mapa,T_mapa,
-  title.text = "Oferta de programas de pregrado en salud por región",
-  caption.text = "",
-  title.color = "black",
-  caption.color = "blue"
-)
-
-############################################################
+# Juntar gráficos
 
 pacman::p_load(patchwork)
 
@@ -379,29 +340,7 @@ ggsave("union_plot_7.png",
 ############### MAPAS SEGUNDA ESPECIALIDAD ################
 ###########################################################
 
-#1. Cargar paquetes
-
-library(pacman)
-p_load(sp,rgdal,ggplot2,sf,tidyverse,psych,purrr,ggrepel)
-
-#2. Cargar archivos y crear centroide
-
-mapa <- st_read("BAS_LIM_DEPARTAMENTO.shp")
-datos_uni <- readxl::read_xlsx("Data_map_score10.xlsx")
-
-mapa <- mapa %>% mutate(centroid = map(geometry, st_centroid), coords = map(centroid,
-                                                                            st_coordinates), coords_x 
-                        = map_dbl(coords,1), coords_y = map_dbl(coords, 2))
-
-
-#5. Unir bases de datos
-
-datos_uni <- readxl::read_xlsx("Data_map_score10.xlsx")
-datos_F <- mapa %>% 
-  left_join(datos_uni)
-
-##########################################################
-############### Categorizar Medicina #####################
+# Mapa Medicina SE (SE_MED)
 
 datos_F <- arrange(datos_F, SE_MED)
 datos_F$SE_MED <- factor(datos_F$SE_MED, 
@@ -424,14 +363,14 @@ SEM_mapa <- datos_F %>%
                                "3 programs" = "#6FC59E",
                                "4 programs" = "#43CD80",
                                "21 programs" = "#4876FF")) +
-  theme_bw()+
+  theme_bw() +
   theme(
     legend.position = "left",
     legend.margin = margin(3,3,3,3)
-  )+ 
+  ) + 
   theme(
     legend.text = element_text(size = 16, colour = "black")
-  )+ 
+  ) + 
   geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
   geom_label_repel(mapping = aes(coords_x, coords_y, label = SE_MED_L), 
                    fontface = "bold", color = "gray15",
@@ -449,8 +388,7 @@ SEM_mapa <- datos_F %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
-#########################################################
-################ Categorizar Enfermería #################
+# Mapa enfermería SE (SE_ENF)
 
 datos_F <- arrange(datos_F, SE_ENF)
 datos_F$SE_ENF <- factor(datos_F$SE_ENF, 
@@ -473,10 +411,10 @@ SEE_mapa <- datos_F %>%
   theme(
     legend.position = "left",
     legend.margin = margin(3,3,3,3)
-  )+ 
+  ) + 
   theme(
     legend.text = element_text(size = 16, colour = "black")
-  )+ 
+  ) + 
   geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40')+
   geom_label_repel(mapping = aes(coords_x, coords_y, label = SE_ENF_L), 
                    fontface = "bold", color = "gray15",
@@ -494,8 +432,7 @@ SEE_mapa <- datos_F %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
-#########################################################
-################ Categorizar Psicologia #################
+# Mapa Psicología SE (SE_PSIC) 
 
 datos_F <- arrange(datos_F, SE_PSIC)
 datos_F$SE_PSIC <- factor(datos_F$SE_PSIC, 
@@ -539,8 +476,7 @@ SEP_mapa <- datos_F %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
-##########################################################
-####################### UNIR MAPAS #######################
+# Unir mapas
 
 pacman::p_load(patchwork)
 
@@ -553,10 +489,3 @@ ggsave("union_plot_11.png",
        plot = union_plot_11,
        width = 20, height = 9, dpi = 300)
 xunion_plot_1
-
-
-
-
-
-
-
