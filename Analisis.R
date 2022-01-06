@@ -2,7 +2,7 @@
 library(pacman)
 p_load(tidyverse, skimr, psych)
 
-BASE <- readxl::read_xlsx("PROGRAMA2.xlsx")
+BASE <- readxl::read_xlsx("PROGRAMA3.xlsx")
 names(BASE)
 
 #############################################
@@ -314,14 +314,13 @@ BASE %>%
   select(Grade, Public) %>% 
   count(Grade, Public) %>%
   mutate(
-    Porcentaje = round (n/sum(n),2)) %>% 
+    Porcentaje = round (n/sum(n)*100)) %>% 
   print(n = Inf)
 
 ########################################################
 ########## Conteos de programas de SE ##################
 
-
-#Distribución geográfica de los programas
+#Distribución geográfica Medicina
 BASE %>%
   filter(Grade == "Especialidad") %>% 
   filter(Public == "Medicos") %>%
@@ -331,47 +330,136 @@ BASE %>%
   print(n = Inf)
 
 #Cantidad de universidades publicas y privadas
+#En cuanto a Grade se excluye a todos los de pregrado
+#Para considerar a los de segunda especialidad y subespecialidad
 BASE %>%
-  filter(Grade == "Especialidad") %>% 
+  filter(Grade != "Pregrado") %>% 
   filter(Public == "Medicos") %>%
   count(Public, Management) %>% 
   mutate(
     Porcentaje = round (n/sum(n)*100))
 
-#Costo
-BASE %>%
+#Costo SE de Medicos
+BASE %>%  
   filter(Grade == "Especialidad") %>%
   filter(Public == "Medicos") %>%
-  select(Costo_Tmin:Costo_Tmax) %>% 
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  describe()
+
+BASE %>% 
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Medicos") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
   print(n = Inf)
 
-##############################################
-############ Programs by region ##############
+#Costo SUBESPECIALIDAD en Medicina
+BASE %>%
+  filter(Grade == "EspecialidadS") %>%
+  filter(Public == "Medicos") %>%
+  select(Costo_Tmax) %>% 
+  print(n = Inf)
 
-BASE_3 <- filter(BASE, Grade != "Especialidad")
-
-REGIONES <- BASE_3 %>% 
-  count(Region, Carrer) %>% 
+#Distribución geográfica Enfermería
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Medicos") %>%
+  count(Region, Public) %>% 
   mutate(
-    Porcentaje = n/sum(n)) %>% 
+    Porcentaje = round (n/sum(n)*100)) %>% 
   print(n = Inf)
 
-BASE_4 <- filter(BASE, Grade != "Pregrado")
-names(BASE_4)
-
-REGIONES <- BASE_4 %>% 
-  count(Region, Carrer) %>% 
+#Universidades publicas y privadas en Enfermería
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Enfermeras") %>%
+  count(Public, Management) %>% 
   mutate(
-    Porcentaje = n/sum(n)) %>% 
+    Porcentaje = round (n/sum(n)*100))
+
+#Costo SE en enfermería
+BASE %>%  
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Enfermeras") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  describe()
+
+BASE %>% 
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Enfermeras") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
   print(n = Inf)
 
+#Distribución geográfica Psicología
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Psicologos") %>%
+  count(Region, Public) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
 
-library(openxlsx)
-openxlsx::write.xlsx(REGIONES, file = "Regiones.xlsx")
+#Cantidad de universidades publicas y privadas en Psicología
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Psicologos") %>%
+  count(Public, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
 
+#Costo SE de Psicología
+BASE %>%  
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Psicologos") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  describe()
+
+BASE %>% 
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Medicos") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  print(n = Inf)
+
+#Distribución geográfica Multidisciplinario
+
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Multidisciplinario") %>%
+  count(Region, Public) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100)) %>% 
+  print(n = Inf)
+
+#Cantidad de universidades publicas y privadas Multidisciplinario
+BASE %>%
+  filter(Grade == "Especialidad") %>% 
+  filter(Public == "Multidisciplinario") %>%
+  count(Public, Management) %>% 
+  mutate(
+    Porcentaje = round (n/sum(n)*100))
+
+#Costo SE Multidisciplinario
+BASE %>%  
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Multidisciplinario") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  describe()
+
+BASE %>% 
+  filter(Grade == "Especialidad") %>%
+  filter(Public == "Multidisciplinario") %>%
+  select(Costo_Tmin: Costo_Tmax) %>%
+  filter(Costo_Tmax != 0) %>% 
+  print(n = Inf)
 
 ########################################################
-################ Crear el grafico de barras ############
+####################### Gráficos #######################
 
 pacman::p_load(tidyverse, openxlsx, labelled, ggplot2,scales, jcolors)
 
