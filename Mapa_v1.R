@@ -64,10 +64,10 @@ ggplot(datos_F) +
                   size = 2.25)
 
 ###################################################################### 
-############## Mapas con cantidades categorizadas ####################
+######################### Mapas con rangos ###########################
 ######################################################################
 
-# Mapa con rangos 
+# Pregrado 
 
 br <- c(0, 1, 6, 11, 21, 50, 108)
 datos_F$mapa_df <- cut(datos_F$TOTAL_P,
@@ -76,33 +76,32 @@ datos_F$mapa_df <- cut(datos_F$TOTAL_P,
 
 pal <- hcl.colors(7, "Inferno", rev = TRUE, alpha = 0.7)
 
-map <- ggplot() + 
-  geom_sf(data = datos_F, fill = "grey80", color = NA) + 
-  geom_label_repel(mapping = aes(coords_x, coords_y, 
-                                 label = TOTAL_P_C))
-
 map <- ggplot(datos_F) + 
   geom_sf(fill = "white")
 
-map + 
+P_mapa <- map + 
   geom_sf(data = datos_F,
           aes(fill = mapa_df), color = "white") + 
   labs(title = "",
-       caption = "Instituto Peruano de Orientación Psicológica") + 
+       fill = "(n = 252)", 
+       caption = "") + 
   scale_fill_manual(values = pal,
                     drop = FALSE) + 
   theme_void() + 
   theme(plot.caption = element_text(size = 7, face = "italic")) +
   geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
   geom_label_repel(mapping = aes(coords_x, coords_y, 
-                                 label = TOTAL_P_C))
+                                 label = TOTAL_P_C),
+                                 fontface = "bold",
+                                 color = "gray20",
+                                 box.padding = unit(0.30, "lines"),
+                                 point.padding = unit(0.2, "lines"),
+                                 segment.color = "gray90")
   
 
-P_mapa <- datos_F %>% 
-  ggplot(aes(fill = TOTAL_P)) +
-  geom_sf(colour = "white", size = 0.90)
-
-
+###################################################################### 
+###################### Mapas mediante categorías #####################
+######################################################################
 
 # MAPA DEL TOTAL DE PROGRAMAS
 # Programas de pregrado
@@ -166,7 +165,56 @@ P_mapa <- datos_F %>%
        axis.title.y = element_blank(),
        axis.title.x = element_blank())
 
-# Programas de segunda especialidad
+###################################################################### 
+################## Segunda especialidad rangos #######################
+######################################################################
+
+# Segunda especialidad 
+
+qr <- c(0, 1, 6, 11, 34)
+datos_F$mapa_df <- cut(datos_F$TOTAL_SE,
+                       breaks = qr,
+                       dig.lab = 5)
+
+pal <- hcl.colors(7, "Inferno", rev = TRUE, alpha = 0.7)
+
+map <- ggplot(datos_F) + 
+  geom_sf(fill = "white")
+
+SE_mapa <- map + 
+  geom_sf(data = datos_F,
+          aes(fill = mapa_df), color = "gray81") + 
+  labs(title = "",
+       fill = "(n = 63)", 
+       caption = "") + 
+  scale_fill_manual(values = pal,
+                    drop = FALSE) + 
+  theme_void() + 
+  theme(plot.caption = element_text(size = 7, face = "italic")) +
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
+  geom_label_repel(mapping = aes(coords_x, coords_y, 
+                                 label = TOTAL_SE_C),
+                   fontface = "bold",
+                   color = "gray15",
+                   box.padding = unit(0.30, "lines"),
+                   point.padding = unit(0.2, "lines"),
+                   segment.color = "gray50")
+
+
+# Unir mapas
+
+pacman::p_load(patchwork)
+
+grafico_mapa  <- (P_mapa + SE_mapa)
+
+ggsave("grafico_mapa.png",
+       plot = grafico_mapa,
+       width = 14, height = 10, dpi = 300)
+
+
+#######################################################################
+##### Programas de segunda especialidad por categoría ####################
+#######################################################################
 
 datos_F <- arrange(datos_F, TOTAL_SE)
 datos_F$TOTAL_SE <- factor(datos_F$TOTAL_SE, 
