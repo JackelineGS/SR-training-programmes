@@ -29,7 +29,7 @@ p_load(ggplot2,tidyverse,psych,purrr,sf, sp, ggrepel)
 mapa_sh <- st_read("BAS_LIM_DEPARTAMENTO.shp") 
 
 # Creación del centroide en el archivo .shp
-mapa_sh <- mapa %>% 
+mapa_sh <- mapa_sh %>% 
   mutate(centroid = map(geometry, st_centroid), 
                         coords = map(centroid, st_coordinates), 
                         coords_x = map_dbl(coords,1), 
@@ -52,56 +52,93 @@ ggplot(data = datos_F) +
 
 # Mapa con etiqueta de las cantidades
 ggplot(datos_F) +
-  geom_sf(aes(fill = TOTAL)) +
+  geom_sf(aes(fill = TOTAL_P)) +
         labs(title = "Cantidad de programas",
            caption = "Fuente: Elaboración propia",
                  x = "Longitud",
                  y = "Latitud") +
   scale_fill_continuous(guide_legend(title = "Cantidad")) +
-  geom_text_repel(mapping = aes(coords_x, coords_y, label = TOTAL), size = 2.25)
+  geom_text_repel(mapping = aes(coords_x, 
+                                coords_y, 
+                                label = TOTAL_P_C), 
+                  size = 2.25)
 
 ###################################################################### 
 ############## Mapas con cantidades categorizadas ####################
 ######################################################################
 
+# Mapa con rangos 
+
+br <- c(0, 1, 6, 11, 21, 50, 108)
+datos_F$mapa_df <- cut(datos_F$TOTAL_P,
+                       breaks = br,
+                       dig.lab = 5)
+
+pal <- hcl.colors(7, "Inferno", rev = TRUE, alpha = 0.7)
+
+map <- ggplot() + 
+  geom_sf(data = datos_F, fill = "grey80", color = NA) + 
+  geom_label_repel(mapping = aes(coords_x, coords_y, 
+                                 label = TOTAL_P_C))
+
+map <- ggplot(datos_F) + 
+  geom_sf(fill = "white")
+
+map + 
+  geom_sf(data = datos_F,
+          aes(fill = mapa_df), color = "white") + 
+  labs(title = "",
+       caption = "Instituto Peruano de Orientación Psicológica") + 
+  scale_fill_manual(values = pal,
+                    drop = FALSE) + 
+  theme_void() + 
+  theme(plot.caption = element_text(size = 7, face = "italic")) +
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
+  geom_label_repel(mapping = aes(coords_x, coords_y, 
+                                 label = TOTAL_P_C))
+  
+
+P_mapa <- datos_F %>% 
+  ggplot(aes(fill = TOTAL_P)) +
+  geom_sf(colour = "white", size = 0.90)
+
+
+
 # MAPA DEL TOTAL DE PROGRAMAS
+# Programas de pregrado
 
-datos_F <- arrange(datos_F, TOTAL)
-datos_F$TOTAL <- factor(datos_F$TOTAL, 
-                            levels = c(1, 2, 3, 4, 5, 6, 8, 11,
-                                       13, 15, 19, 22, 142),
-                            labels = c("1 program",
-                                       "2 programs",
-                                       "3 programs",
-                                       "4 programs",
-                                       "5 programs",
-                                       "6 programs",
-                                       "8 programs",
-                                       "11 programs",
-                                       "13 programs",
-                                       "15 programs",
-                                       "19 programs",
-                                       "22 programs",
-                                       "142 programs"))
-forcats::fct_unique(datos_F$TOTAL)
+datos_F <- arrange(datos_F, TOTAL_P)
+datos_F$TOTAL_P <- factor(datos_F$TOTAL_P, 
+                            levels = c(1, 2, 3, 4, 6, 8, 9,
+                                       10, 13, 14, 108),
+                            labels = c("1 programme",
+                                       "2 programmes",
+                                       "3 programmes",
+                                       "4 programmes",
+                                       "6 programmes",
+                                       "8 programmes",
+                                       "9 programmes",
+                                       "10 programmes",
+                                       "13 programmes",
+                                       "14 programmes",
+                                       "108 programmes"))
+forcats::fct_unique(datos_F$TOTAL_P)
 
-F_mapa <- datos_F %>% 
-  ggplot(aes(fill = TOTAL)) +
+P_mapa <- datos_F %>% 
+  ggplot(aes(fill = TOTAL_P)) +
   geom_sf(colour = "white", size = 0.90) +
-  scale_fill_manual("TOTAL",
-                    values = c("1 program" = "#FF7F00",
-                               "2 programs" = "#FF7F00",
-                               "3 programs" = "#FF7F00",
-                               "4 programs" = "#FF7F00",
-                               "5 programs" = "#FF7F00",
-                               "6 programs" = "#FF7F00",
-                               "8 programs" = "#FF7F00",
-                               "11 programs" = "#FFF68F",
-                               "13 programs" = "#FFF68F",
-                               "15 programs" = "#FFF68F",
-                               "19 programs" = "#FFF68F", 
-                               "22 programs" = "#FFF68F",
-                               "142 programs" = "#A2CD5A")) +
+  scale_fill_manual("Total Programmes - undergraduate",
+                    values = c("1 programme" = "#EEE8AA",
+                               "2 programmes" = "#EEE8AA",
+                               "3 programmes" = "#EEE8AA",
+                               "4 programmes" = "#EEE8AA",
+                               "6 programmes" = "#B4EEB4",
+                               "8 programmes" = "#B4EEB4",
+                               "9 programmes" = "#B4EEB4",
+                               "10 programmes" = "#B4EEB4",
+                               "13 programmes" = "#FFC685",
+                               "14 programmes" = "#FFC685", 
+                               "108 programmes" = "#FFC685")) +
   theme_bw()+
   theme(
     legend.position = "left",
@@ -112,7 +149,7 @@ F_mapa <- datos_F %>%
   ) + 
   geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
   geom_label_repel(mapping = aes(coords_x, coords_y, 
-                     label = TOTAL_L), 
+                     label = TOTAL_P_C), 
                   fontface = "bold", 
                      color = "gray15",
                box.padding = unit(0.30, "lines"),
@@ -129,6 +166,76 @@ F_mapa <- datos_F %>%
        axis.title.y = element_blank(),
        axis.title.x = element_blank())
 
+# Programas de segunda especialidad
+
+datos_F <- arrange(datos_F, TOTAL_SE)
+datos_F$TOTAL_SE <- factor(datos_F$TOTAL_SE, 
+                          levels = c(0, 1, 2, 3, 4, 5, 8, 34),
+                          labels = c("0 programmes", 
+                                     "1 programme",
+                                     "2 programmes",
+                                     "3 programmes",
+                                     "4 programmes",
+                                     "5 programmes",
+                                     "8 programmes",
+                                     "34 programmes"))
+forcats::fct_unique(datos_F$TOTAL_SE)
+
+SE_mapa <- datos_F %>% 
+  ggplot(aes(fill = TOTAL_SE)) +
+  geom_sf(colour = "white", size = 0.90) +
+  scale_fill_manual("Total Programmes - second speciality",
+                    values = c("0 programmes" = "#EEE8AA",
+                               "1 programme" = "#EEE8AA",
+                               "2 programmes" = "#EEE8AA",
+                               "3 programmes" = "#B4EEB4",
+                               "4 programmes" = "#B4EEB4",
+                               "5 programmes" = "#B4EEB4",
+                               "8 programmes" = "#FFC685",
+                               "34 programmes" = "#FFC685")) +
+  theme_bw()+
+  theme(
+    legend.position = "left",
+    legend.margin = margin(3,3,3,3)
+  ) + 
+  theme(
+    legend.text = element_text(size = 10, colour = "black")
+  ) + 
+  geom_point(aes(coords_x, coords_y), size = 2, color = 'gray40') +
+  geom_label_repel(mapping = aes(coords_x, coords_y, 
+                                 label = TOTAL_SE_C), 
+                   fontface = "bold", 
+                   color = "gray15",
+                   box.padding = unit(0.30, "lines"),
+                   point.padding = unit(0.2, "lines"),
+                   segment.color = "gray50",
+                   show.legend = FALSE) +
+  theme_classic(base_size = 12) + 
+  theme(panel.grid = element_line(colour = "transparent"),
+        panel.background = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank())
+
+
+# Unir mapas
+
+pacman::p_load(patchwork)
+
+plot_PSE  <- (P_mapa + SE_mapa)
+
+ggsave("plot_PSE.png",
+       plot = plot_PSE,
+       width = 17, height = 9, dpi = 300)
+xunion_plot_1
+
+
+#############################################################
+################## Mapa por programa ########################
+#############################################################
 
 # Mapa de enfermería (PRE_ENF_F)
 datos_F <- arrange(datos_F, PRE_ENF_F)
@@ -484,8 +591,9 @@ union_plot_8 <- (SEM_mapa)
 union_plot_9 <- (SEE_mapa)
 union_plot_10 <- (SEP_mapa)
 union_plot_11 <- (SEM_mapa + SEE_mapa + SEP_mapa)
+plot_PSE  <- (P_mapa + SE_mapa)
 
-ggsave("union_plot_11.png",
-       plot = union_plot_11,
+ggsave("plot_PSE.png",
+       plot = plot_PSE,
        width = 20, height = 9, dpi = 300)
 xunion_plot_1

@@ -418,13 +418,6 @@ BASE %>%
   filter(Costo_Tmax != 0) %>% 
   describe()
 
-BASE %>% 
-  filter(Grade == "Especialidad") %>%
-  filter(Public == "Medicos") %>%
-  select(Costo_Tmin: Costo_Tmax) %>%
-  filter(Costo_Tmax != 0) %>% 
-  print(n = Inf)
-
 #Distribución geográfica Multidisciplinario
 
 BASE %>%
